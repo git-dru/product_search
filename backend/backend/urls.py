@@ -2,9 +2,10 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from products.views import ProductViewSet
 
-router = DefaultRouter()
-router.register(r'products', ProductViewSet)
+from user.views import UserRegistrationView
+from user.views import UserLoginView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('products/', include('products.urls')),
+    path('user/', include('user.urls')),
 ]
