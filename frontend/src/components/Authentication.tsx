@@ -1,15 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authUser } from "../redux/actions/userActions";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Form, Button } from "react-bootstrap";
-import { BASE_URL, getCsrfToken } from "../config";
+import { BASE_URL } from "../config";
 
 export const Authentication = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [csrf, setCSRF] = useState<string>("");
+
+  const getCsrfToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/user/csrf/`);
+      const csrfToken = response.data.csrfToken;
+      setCSRF(csrfToken);
+    } catch (error) {
+      console.error("Failed to retrieve CSRF token:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await getSession();
+    })();
+  }, []);
+
+  const getSession = async () => {
+    await axios
+      .get(`${BASE_URL}/user/session/`, { withCredentials: true })
+      .then((res) => {
+        if (res.data.isAuthenticated) {
+          whoami();
+        } else {
+          getCsrfToken();
+        }
+      });
+  };
+
+  const whoami = async () => {
+    await axios
+      .get(`${BASE_URL}/user/whoami/`, { withCredentials: true })
+      .then((res) => {
+        dispatch(authUser(res.data.email));
+        navigate("/products");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -45,7 +87,7 @@ export const Authentication = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "X-CSRFToken": getCsrfToken(), // Replace getCsrfToken() with the function to retrieve the CSRF token
+            "X-CSRFToken": csrf, // Replace getCsrfToken() with the function to retrieve the CSRF token
           },
         }
       );
