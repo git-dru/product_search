@@ -5,7 +5,7 @@ import { authUser } from "../redux/actions/userActions";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Form, Button } from "react-bootstrap";
-import { BASE_URL } from "../config";
+import { BASE_URL, getCsrfToken } from "../config";
 
 export const Authentication = () => {
   const [username, setUsername] = useState<string>("");
@@ -31,12 +31,27 @@ export const Authentication = () => {
       return;
     }
     try {
-      const response = await axios.post(`${BASE_URL}/user/login/`, {
-        username,
-        password,
-      });
+      axios.defaults.xsrfCookieName = "csrftoken";
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+      const response = await axios.post(
+        `${BASE_URL}/user/login/`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrfToken(), // Replace getCsrfToken() with the function to retrieve the CSRF token
+          },
+        }
+      );
       if (response.status === 200) {
         const { email } = response.data;
+        localStorage.setItem("email", email);
         dispatch(authUser(email));
         navigate("/products");
       } else {

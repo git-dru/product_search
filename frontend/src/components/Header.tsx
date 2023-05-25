@@ -4,7 +4,8 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/actions/userActions";
 import { AppDispatch, RootState } from "../redux/store";
-
+import axios from "axios";
+import { BASE_URL } from "../config";
 const Header: React.FC = () => {
   const email = useSelector((state: RootState) => state.auth.email);
   const dispatch: AppDispatch = useDispatch();
@@ -12,6 +13,8 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem("email");
+    axios.post(`${BASE_URL}/user/logout/`, {}, { withCredentials: true });
     navigate("/");
   };
 
