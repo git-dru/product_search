@@ -7,6 +7,7 @@ interface AppState {
     sortBy: string,
     direction: string,
   };
+  selected: number[]
 }
 
 const initialState: AppState = {
@@ -15,7 +16,8 @@ const initialState: AppState = {
     searchTerm: '',
     sortBy: "id",
     direction: 'asc'
-  }
+  },
+  selected: []
 };
 
 const authSlice = createSlice({
@@ -31,8 +33,11 @@ const authSlice = createSlice({
     authSession: (state, action) => {
       state.session = {...state.session, ...action.payload};
     },
+    authSelected: (state, action) => {
+      state.selected = [...action.payload];
+    },
   },
 });
 
-export const { authUser, logout, authSession } = authSlice.actions;
+export const { authUser, logout, authSession, authSelected } = authSlice.actions;
 export const authReducer: Reducer<AppState> = authSlice.reducer;

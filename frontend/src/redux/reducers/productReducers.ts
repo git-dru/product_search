@@ -25,7 +25,7 @@ const initialState: ProductState = {
 
 export const selectProduct = createAsyncThunk<void, number, { rejectValue: { errorMessage: string }}> ("product/selectProduct", async (productId: number, thunkAPI) => {
   try {
-    await axios.get(`${BASE_URL}/products/${productId}/select/` , {withCredentials: true});
+    await axios.get(`${BASE_URL}/products/select/?productId=${productId}` , {withCredentials: true});
   } catch (error) {
     const axiosError = error as AxiosError;
     return thunkAPI.rejectWithValue({ errorMessage: axiosError.message || 'Unknown error occurred' });
@@ -36,7 +36,7 @@ export const fetchProducts = createAsyncThunk<Product[], string>('products/fetch
   const queryParams = new URLSearchParams(params);
   const searchTerm = queryParams.get('search');
   if (searchTerm !== null && searchTerm.trim() !== '') {
-    const response = await axios.get(`${BASE_URL}/products/?${params}`, {withCredentials: true});
+    const response = await axios.get(`${BASE_URL}/products/search/?${params}`, {withCredentials: true});
     return response.data as Product[];
   } else {
     return [];
@@ -62,14 +62,10 @@ const productSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(selectProduct.pending, (state) => {
-        state.status = "loading";
       })
       .addCase(selectProduct.fulfilled, (state) => {
-        state.status = "idle";
       })
       .addCase(selectProduct.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload?.errorMessage;
       });
   },
 });

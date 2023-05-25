@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { authSession, authUser } from "../redux/actions/userActions";
+import {
+  authSelected,
+  authSession,
+  authUser,
+} from "../redux/actions/userActions";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Form, Button } from "react-bootstrap";
@@ -39,6 +43,8 @@ export const Authentication = () => {
               ? res.data.sort_by.slice(1)
               : res.data.sort_by;
           const direction = res.data.sort_by[0] === "-" ? "desc" : "asc";
+          const selected = res.data.selected;
+          dispatch(authSelected(selected.map(Number)));
           dispatch(authSession(res.data.search_term, sort_by, direction));
           whoami();
         } else {

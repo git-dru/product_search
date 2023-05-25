@@ -9,6 +9,7 @@ import {
   selectProduct,
 } from "../redux/reducers/productReducers";
 import { AppDispatch } from "../redux/store";
+import { authSelected } from "../redux/actions/userActions";
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -32,6 +33,8 @@ const ProductTable: React.FC = () => {
   const error = useSelector((state: RootState) => state.product.error);
   const session = useSelector((state: RootState) => state.auth.session);
 
+  const selected = useSelector((state: RootState) => state.auth.selected);
+
   const [searchTerm, setSearchTerm] = useState<string>(session.searchTerm);
   const [sortField, setSortField] = useState<string>(session.sortBy);
   const [sortDirection, setSortDirection] = useState<string>(session.direction);
@@ -40,6 +43,12 @@ const ProductTable: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const onSelectProduct = (productId: number) => {
+    const index = selected.indexOf(productId);
+    const updated =
+      index > -1
+        ? [...selected.slice(0, index), ...selected.slice(index + 1)]
+        : [...selected, productId];
+    dispatch(authSelected(updated));
     dispatch(selectProduct(productId));
   };
 
@@ -68,7 +77,7 @@ const ProductTable: React.FC = () => {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              {["id", "name", "description", "price", "stock"].map(
+              {["", "id", "name", "description", "price", "stock"].map(
                 (field: string) => (
                   <th onClick={() => onSort(field)} key={field}>
                     {field}
@@ -79,17 +88,19 @@ const ProductTable: React.FC = () => {
           </thead>
           <tbody>
             {products.map((product: Product) => (
-              <tr key={product.id}>
+              <tr key={product.id} onClick={() => onSelectProduct(product.id)}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selected.indexOf(product.id) > -1}
+                    onChange={() => onSelectProduct(product.id)}
+                  />
+                </td>
                 <td>{product.id}</td>
                 <td>{product.name}</td>
                 <td>{product.description}</td>
                 <td>{product.price}</td>
                 <td>{product.stock}</td>
-                <td>
-                  <button onClick={() => onSelectProduct(product.id)}>
-                    Select
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
