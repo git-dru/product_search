@@ -49,7 +49,8 @@ class SessionView(APIView):
     def get(request, format=None):
         search_term = request.session.get('search_term', '')
         sort_by = request.session.get('sort_by', 'id')
-        return Response({'isAuthenticated': True, "search_term": search_term, 'sort_by' : sort_by})
+        selected = request.session.get('selected', [])
+        return Response({'isAuthenticated': True, "search_term": search_term, 'sort_by' : sort_by, 'selected': selected})
 
 class GetCSRF(APIView):       
     def get(self, request, format=None):
