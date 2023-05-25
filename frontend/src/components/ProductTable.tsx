@@ -30,8 +30,8 @@ const ProductTable: React.FC = () => {
   const products = useSelector((state: RootState) => state.product.products);
   const status = useSelector((state: RootState) => state.product.status);
   const error = useSelector((state: RootState) => state.product.error);
-
   const session = useSelector((state: RootState) => state.auth.session);
+
   const [searchTerm, setSearchTerm] = useState<string>(session.searchTerm);
   const [sortField, setSortField] = useState<string>(session.sortBy);
   const [sortDirection, setSortDirection] = useState<string>(session.direction);
