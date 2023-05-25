@@ -1,0 +1,82 @@
+[
+  {
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+      "name": "Laptop A1",
+      "description": "High performance laptop",
+      "price": "1200.99",
+      "stock": 15
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+      "name": "Smartphone B2",
+      "description": "Android smartphone",
+      "price": "800.99",
+      "stock": 10
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+      "name": "Tablet C3",
+      "description": "10 inch tablet",
+      "price": "500.99",
+      "stock": 5
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+      "name": "Headphones D4",
+      "description": "Noise-cancelling headphones",
+      "price": "250.99",
+      "stock": 30
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+      "name": "Smart Watch E5",
+      "description": "Fitness tracking smart watch",
+      "price": "300.99",
+      "stock": 20
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+      "name": "Camera F6",
+      "description": "DSLR camera",
+      "price": "1500.99",
+      "stock": 10
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 7,
+    "fields": {
+      "name": "Bluetooth Speaker G7",
+      "description": "Portable Bluetooth Speaker",
+      "price": "99.99",
+      "stock": 40
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 8,
+    "fields": {
+      "name": "Smart TV H8",
+      "description": "50 inch Smart TV",
+      "price": "799.99",
+      "stock": 10
+    }
+  }
+]

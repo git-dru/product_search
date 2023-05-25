@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserProfileSerializer
@@ -33,3 +33,8 @@ class UserLoginView(APIView):
             return Response(UserProfileSerializer(user).data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class UserLogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({"status": "Logged out"}, status=status.HTTP_200_OK)
