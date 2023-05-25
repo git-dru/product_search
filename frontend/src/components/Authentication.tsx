@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { authUser } from "../redux/actions/userActions";
+import { authSession, authUser } from "../redux/actions/userActions";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Form, Button } from "react-bootstrap";
@@ -34,6 +34,12 @@ export const Authentication = () => {
       .get(`${BASE_URL}/user/session/`, { withCredentials: true })
       .then((res) => {
         if (res.data.isAuthenticated) {
+          const sort_by =
+            res.data.sort_by[0] === "-"
+              ? res.data.sort_by.slice(1)
+              : res.data.sort_by;
+          const direction = res.data.sort_by[0] === "-" ? "desc" : "asc";
+          dispatch(authSession(res.data.search_term, sort_by, direction));
           whoami();
         } else {
           getCsrfToken();

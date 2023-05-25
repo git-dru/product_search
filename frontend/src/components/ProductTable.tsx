@@ -30,9 +30,11 @@ const ProductTable: React.FC = () => {
   const products = useSelector((state: RootState) => state.product.products);
   const status = useSelector((state: RootState) => state.product.status);
   const error = useSelector((state: RootState) => state.product.error);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sortField, setSortField] = useState<keyof Product>("id");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const session = useSelector((state: RootState) => state.auth.session);
+  const [searchTerm, setSearchTerm] = useState<string>(session.searchTerm);
+  const [sortField, setSortField] = useState<string>(session.sortBy);
+  const [sortDirection, setSortDirection] = useState<string>(session.direction);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const dispatch: AppDispatch = useDispatch();
@@ -47,7 +49,7 @@ const ProductTable: React.FC = () => {
     dispatch(fetchProducts(prams));
   }, [dispatch, debouncedSearchTerm, sortDirection, sortField]);
 
-  const onSort = (field: keyof Product) => {
+  const onSort = (field: string) => {
     setSortField(field);
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
   };
@@ -66,11 +68,13 @@ const ProductTable: React.FC = () => {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              {["id", "name", "description", "price", "stock"].map((field) => (
-                <th onClick={() => onSort(field as keyof Product)} key={field}>
-                  {field}
-                </th>
-              ))}
+              {["id", "name", "description", "price", "stock"].map(
+                (field: string) => (
+                  <th onClick={() => onSort(field)} key={field}>
+                    {field}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
           <tbody>

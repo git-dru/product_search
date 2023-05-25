@@ -25,15 +25,7 @@ const initialState: ProductState = {
 
 export const selectProduct = createAsyncThunk<void, number, { rejectValue: { errorMessage: string }}> ("product/selectProduct", async (productId: number, thunkAPI) => {
   try {
-    await axios.post(`${BASE_URL}/products/${productId}/select/`, null ,
-    {
-      withCredentials: true,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCsrfToken(), // Replace getCsrfToken() with the function to retrieve the CSRF token
-      },
-    });
+    await axios.get(`${BASE_URL}/products/${productId}/select/` , {withCredentials: true});
   } catch (error) {
     const axiosError = error as AxiosError;
     return thunkAPI.rejectWithValue({ errorMessage: axiosError.message || 'Unknown error occurred' });
@@ -44,7 +36,7 @@ export const fetchProducts = createAsyncThunk<Product[], string>('products/fetch
   const queryParams = new URLSearchParams(params);
   const searchTerm = queryParams.get('search');
   if (searchTerm !== null && searchTerm.trim() !== '') {
-    const response = await axios.get(`${BASE_URL}/products/?${params}`);
+    const response = await axios.get(`${BASE_URL}/products/?${params}`, {withCredentials: true});
     return response.data as Product[];
   } else {
     return [];
