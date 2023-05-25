@@ -3,14 +3,15 @@ import { useSelector } from "react-redux";
 import { Authentication } from "./components/Authentication";
 import Header from "./components/Header";
 import { Container } from "react-bootstrap";
-
+import { ToastContainer } from "react-toastify";
+import ProductTable from "./components/ProductTable";
 const App = () => {
-  const email = useSelector((state: any) => state.auth.email);
-  console.log(email);
   return (
     <Container>
       <Header />
       <Authentication />
+      <ProductTable />
+      <ToastContainer />
     </Container>
   );
 };
