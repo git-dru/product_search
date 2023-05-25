@@ -22,9 +22,15 @@ const initialState: ProductState = {
   error: null,
 }
 
-export const fetchProducts = createAsyncThunk<Product[], string>('products/fetchProducts', async (prams: string) => {
-  const response = await axios.get(`${BASE_URL}/products/?${prams}`);
-  return response.data as Product[];
+export const fetchProducts = createAsyncThunk<Product[], string>('products/fetchProducts', async (params: string) => {
+  const queryParams = new URLSearchParams(params);
+  const searchTerm = queryParams.get('search');
+  if (searchTerm !== null && searchTerm.trim() !== '') {
+    const response = await axios.get(`${BASE_URL}/products/?${params}`);
+    return response.data as Product[];
+  } else {
+    return [];
+  }
 });
 
 const productSlice = createSlice({
