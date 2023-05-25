@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { authUser } from "../redux/actions/userActions";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 import { Form, Button } from "react-bootstrap";
+import { BASE_URL } from "../config";
 
 export const Authentication = () => {
   const [username, setUsername] = useState<string>("");
@@ -11,22 +13,42 @@ export const Authentication = () => {
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
-    if (username === "" || password === "") {
-      return console.log("Input all data");
+    if (username === "") {
+      toast("Please Input Username", {
+        type: toast.TYPE.WARNING,
+        position: toast.POSITION.TOP_CENTER,
+      });
+      return;
+    }
+
+    if (password === "") {
+      toast("Please Input Password", {
+        type: toast.TYPE.WARNING,
+        position: toast.POSITION.TOP_CENTER,
+      });
+      return;
     }
     try {
-      const response = await axios.post("http://localhost:8000/user/login/", {
+      const response = await axios.post(`${BASE_URL}/user/login/`, {
         username,
         password,
       });
       if (response.status === 200) {
+        toast("Successfully LogIn", {
+          type: toast.TYPE.SUCCESS,
+          position: toast.POSITION.TOP_CENTER,
+        });
+
         const { email } = response.data;
         dispatch(authUser(email));
       } else {
         console.log(response);
       }
     } catch (err) {
-      console.error(err);
+      toast("Invalid credentials", {
+        type: toast.TYPE.WARNING,
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
 
     setUsername("");
@@ -35,7 +57,7 @@ export const Authentication = () => {
 
   return (
     <Form className="d-flex justify-content-center align-items-center flex-column w-25 m-auto mt-5 pt-5">
-      <Form.Group controlId="formBasicEmail" className="w-100">
+      <Form.Group controlId="formBasicUsername" className="w-100">
         <Form.Label>Username</Form.Label>
         <Form.Control
           type="text"
