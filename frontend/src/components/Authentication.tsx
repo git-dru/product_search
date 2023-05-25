@@ -1,16 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authUser } from "../redux/actions/userActions";
 import axios from "axios";
 import { toast } from "react-toastify";
-
 import { Form, Button } from "react-bootstrap";
 import { BASE_URL } from "../config";
 
 export const Authentication = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (username === "") {
@@ -34,13 +36,9 @@ export const Authentication = () => {
         password,
       });
       if (response.status === 200) {
-        toast("Successfully LogIn", {
-          type: toast.TYPE.SUCCESS,
-          position: toast.POSITION.TOP_CENTER,
-        });
-
         const { email } = response.data;
         dispatch(authUser(email));
+        navigate("/products");
       } else {
         console.log(response);
       }

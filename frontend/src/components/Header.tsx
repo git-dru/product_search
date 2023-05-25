@@ -1,16 +1,18 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navbar, Nav, Button } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/actions/userActions";
 import { AppDispatch, RootState } from "../redux/store";
 
 const Header: React.FC = () => {
   const email = useSelector((state: RootState) => state.auth.email);
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/");
   };
 
   return (
