@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction, Reducer, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { AxiosError } from "axios";
 import { BASE_URL } from '../../config';
-
+import { getCsrfToken } from '../../config';
 export type Product = {
   id: number,
   name: string,
@@ -21,6 +22,23 @@ const initialState: ProductState = {
   status: 'idle',
   error: null,
 }
+
+export const selectProduct = createAsyncThunk<void, number, { rejectValue: { errorMessage: string }}> ("product/selectProduct", async (productId: number, thunkAPI) => {
+  try {
+    await axios.post(`${BASE_URL}/products/${productId}/select/`, null ,
+    {
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(), // Replace getCsrfToken() with the function to retrieve the CSRF token
+      },
+    });
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    return thunkAPI.rejectWithValue({ errorMessage: axiosError.message || 'Unknown error occurred' });
+  }
+});
 
 export const fetchProducts = createAsyncThunk<Product[], string>('products/fetchProducts', async (params: string) => {
   const queryParams = new URLSearchParams(params);
@@ -50,6 +68,16 @@ const productSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
+      })
+      .addCase(selectProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(selectProduct.fulfilled, (state) => {
+        state.status = "idle";
+      })
+      .addCase(selectProduct.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload?.errorMessage;
       });
   },
 });

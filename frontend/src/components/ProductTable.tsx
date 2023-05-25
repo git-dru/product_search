@@ -3,7 +3,11 @@ import { Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
-import { Product, fetchProducts } from "../redux/reducers/productReducers";
+import {
+  Product,
+  fetchProducts,
+  selectProduct,
+} from "../redux/reducers/productReducers";
 import { AppDispatch } from "../redux/store";
 
 function useDebounce(value: string, delay: number) {
@@ -26,13 +30,16 @@ const ProductTable: React.FC = () => {
   const products = useSelector((state: RootState) => state.product.products);
   const status = useSelector((state: RootState) => state.product.status);
   const error = useSelector((state: RootState) => state.product.error);
-
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortField, setSortField] = useState<keyof Product>("id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const dispatch: AppDispatch = useDispatch();
+
+  const onSelectProduct = (productId: number) => {
+    dispatch(selectProduct(productId));
+  };
 
   useEffect(() => {
     const direction = sortDirection === "desc" ? "-" : "";
@@ -74,6 +81,11 @@ const ProductTable: React.FC = () => {
                 <td>{product.description}</td>
                 <td>{product.price}</td>
                 <td>{product.stock}</td>
+                <td>
+                  <button onClick={() => onSelectProduct(product.id)}>
+                    Select
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
