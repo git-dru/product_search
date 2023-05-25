@@ -6,7 +6,6 @@ from rest_framework import status
 from django.middleware.csrf import get_token
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse
 
 class UserRegistrationView(APIView):
     def post(self, request, format=None):
@@ -44,12 +43,13 @@ class UserLogoutView(APIView):
         return Response({"status": "Logged out"}, status=status.HTTP_200_OK)
 
 class SessionView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     @staticmethod
     def get(request, format=None):
-        return Response({'isAuthenticated': True})
+        search_term = request.session.get('search_term', '')
+        sort_by = request.session.get('sort_by', 'id')
+        return Response({'isAuthenticated': True, "search_term": search_term, 'sort_by' : sort_by})
 
 class GetCSRF(APIView):       
     def get(self, request, format=None):
