@@ -10,18 +10,17 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
 
-class UserRegistrationView(APIView):
-    def post(self, request, format=None):
-        serializer = UserProfileSerializer(data=request.data)
-        print(request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            # We need to call set_password to handle password hashing
-            user.set_password(serializer.validated_data['password'])
-            user.save()
-            return Response(UserProfileSerializer(user).data)
-        else:
-            return Response(serializer.errors, status=400)
+@require_POST
+def register_view(request):
+    serializer = UserProfileSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        # We need to call set_password to handle password hashing
+        user.set_password(serializer.validated_data['password'])
+        user.save()
+        return Response(UserProfileSerializer(user).data)
+    else:
+        return Response(serializer.errors, status=400)
 
 @require_POST
 def login_view(request):
