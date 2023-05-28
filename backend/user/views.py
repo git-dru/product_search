@@ -6,6 +6,9 @@ from rest_framework import status
 from django.middleware.csrf import get_token
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
 
 class UserRegistrationView(APIView):
     def post(self, request, format=None):
@@ -20,27 +23,31 @@ class UserRegistrationView(APIView):
         else:
             return Response(serializer.errors, status=400)
 
-class UserLoginView(APIView):
-    def post(self, request, format=None):
-        data = request.data
-        username = data.get('username', None)
-        password = data.get('password', None)
-        print(username, password)
-        if username is None or password is None:
-            return Response({'error': 'Please provide both username and password'}, status=status.HTTP_400_BAD_REQUEST)
+@require_POST
+def login_view(request):
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
 
-        user = authenticate(username=username, password=password)
+    if username is None or password is None:
+        return JsonResponse({'detail': 'Please provide username and password.'}, status=400)
 
-        if user is not None:
-            login(request, user)
-            return Response(UserProfileSerializer(user).data, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    user = authenticate(username=username, password=password)
 
-class UserLogoutView(APIView):
-    def post(self, request):
-        logout(request)
-        return Response({"status": "Logged out"}, status=status.HTTP_200_OK)
+    if user is None:
+        return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
+
+    login(request, user)
+    return JsonResponse({'detail': 'Successfully logged in.', 'email': user.email})
+
+def logout_view(request):
+    if not request.user.is_authenticated:
+       
+        return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
+
+    delete_session(request)
+    logout(request)
+    return JsonResponse({'detail': 'Successfully logged out.'})
 
 class SessionView(APIView):
     permission_classes = [IsAuthenticated]
@@ -52,9 +59,11 @@ class SessionView(APIView):
         selected = request.session.get('selected', [])
         return Response({'isAuthenticated': True, "search_term": search_term, 'sort_by' : sort_by, 'selected': selected})
 
-class GetCSRF(APIView):       
-    def get(self, request, format=None):
-        return Response({'detail': 'CSRF cookie set', 'csrfToken' : get_token(request)})
+def get_csrf(request):
+    response = JsonResponse({'detail': 'CSRF cookie set'})
+    response['X-CSRFToken'] = get_token(request)
+    return response
+
     
 class WhoAmIView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -64,3 +73,7 @@ class WhoAmIView(APIView):
     def get(request, format=None):
         print(request.user)
         return Response({'email': request.user.email})
+def delete_session(request):
+    request.session.clear()
+
+    

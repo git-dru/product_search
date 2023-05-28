@@ -38,12 +38,13 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
 ]
 
+CORS_EXPOSE_HEADERS = ["X-CSRFToken"]
+
 INSTALLED_APPS = [
     'user',
     'products',
     'rest_framework',
     'corsheaders',
-    'csrf',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
