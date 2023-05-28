@@ -1,69 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {
-  authSelected,
-  authSession,
-  authUser,
-} from "../redux/actions/userActions";
+import { Form, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Form, Button } from "react-bootstrap";
+import { authUser } from "../redux/actions/userActions";
 import { BASE_URL } from "../config";
-
-export const Authentication = () => {
+import { useAuthContext } from "./AuthProvider";
+export const Authentication: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [csrf, setCSRF] = useState<string>("");
 
-  const getCsrfToken = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/user/csrf/`);
-      const csrfToken = response.data.csrfToken;
-      setCSRF(csrfToken);
-    } catch (error) {
-      console.error("Failed to retrieve CSRF token:", error);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      await getSession();
-    })();
-  }, []);
-
-  const getSession = async () => {
-    await axios
-      .get(`${BASE_URL}/user/session/`, { withCredentials: true })
-      .then((res) => {
-        if (res.data.isAuthenticated) {
-          const sort_by =
-            res.data.sort_by[0] === "-"
-              ? res.data.sort_by.slice(1)
-              : res.data.sort_by;
-          const direction = res.data.sort_by[0] === "-" ? "desc" : "asc";
-          const selected = res.data.selected;
-          dispatch(authSelected(selected.map(Number)));
-          dispatch(authSession(res.data.search_term, sort_by, direction));
-          whoami();
-        } else {
-          getCsrfToken();
-        }
-      });
-  };
-
-  const whoami = async () => {
-    await axios
-      .get(`${BASE_URL}/user/whoami/`, { withCredentials: true })
-      .then((res) => {
-        dispatch(authUser(res.data.email));
-        navigate("/products");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const { csrf } = useAuthContext();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -105,7 +53,6 @@ export const Authentication = () => {
       );
       if (response.status === 200) {
         const { email } = response.data;
-        localStorage.setItem("email", email);
         dispatch(authUser(email));
         navigate("/products");
       } else {

@@ -3,11 +3,8 @@ import { Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
-import {
-  Product,
-  fetchProducts,
-  selectProduct,
-} from "../redux/reducers/productReducers";
+import { Product, fetchProducts } from "../redux/reducers/productReducers";
+import { selectProduct } from "../redux/reducers/userReducer";
 import { AppDispatch } from "../redux/store";
 import { authSelected } from "../redux/actions/userActions";
 
@@ -68,6 +65,7 @@ const ProductTable: React.FC = () => {
       <input
         type="text"
         value={searchTerm}
+        className="mb-3"
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search products..."
       />

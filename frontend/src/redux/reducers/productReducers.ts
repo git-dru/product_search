@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction, Reducer, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { AxiosError } from "axios";
 import { BASE_URL } from '../../config';
-import { getCsrfToken } from '../../config';
 export type Product = {
   id: number,
   name: string,
@@ -23,14 +21,6 @@ const initialState: ProductState = {
   error: null,
 }
 
-export const selectProduct = createAsyncThunk<void, number, { rejectValue: { errorMessage: string }}> ("product/selectProduct", async (productId: number, thunkAPI) => {
-  try {
-    await axios.get(`${BASE_URL}/products/select/?productId=${productId}` , {withCredentials: true});
-  } catch (error) {
-    const axiosError = error as AxiosError;
-    return thunkAPI.rejectWithValue({ errorMessage: axiosError.message || 'Unknown error occurred' });
-  }
-});
 
 export const fetchProducts = createAsyncThunk<Product[], string>('products/fetchProducts', async (params: string) => {
   const queryParams = new URLSearchParams(params);
@@ -61,12 +51,6 @@ const productSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      .addCase(selectProduct.pending, (state) => {
-      })
-      .addCase(selectProduct.fulfilled, (state) => {
-      })
-      .addCase(selectProduct.rejected, (state, action) => {
-      });
   },
 });
 

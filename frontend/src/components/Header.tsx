@@ -1,21 +1,24 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navbar, Nav, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { logout } from "../redux/actions/userActions";
 import { AppDispatch, RootState } from "../redux/store";
-import axios from "axios";
+import { useAuthContext } from "./AuthProvider";
 import { BASE_URL } from "../config";
+
 const Header: React.FC = () => {
   const email = useSelector((state: RootState) => state.auth.email);
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
+  const { getCsrfToken } = useAuthContext();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("email");
-    axios.post(`${BASE_URL}/user/logout/`, {}, { withCredentials: true });
-    navigate("/");
+  const handleLogout = async () => {
+    await axios
+      .get(`${BASE_URL}/user/logout/`, { withCredentials: true })
+      .then(() => {
+        dispatch(logout());
+        getCsrfToken();
+      });
   };
 
   return (
